@@ -4,7 +4,6 @@
 #FileName    :domain_inversion.py
 #Version     :1.0
 
-import _init_paths
 import os
 import torch
 import torch.nn as nn
@@ -68,23 +67,17 @@ def fix_bn(m):
 
 def main(image_name):
     model = Deeplab(num_classes=1, pretrained=False, inversion=True).cuda()
-    #print(model)
-    model.load_state_dict(torch.load('/home/cyang53/CED/Ours/SFDA-TMI/checkpoint/Endo_best.pth'))
+    model.load_state_dict(torch.load('/home/cyang53/CED/Ours/SFDA-FSM/checkpoint/Endo_best.pth'))
     model.apply(fix_bn)
     model.cuda()
 
-    #model.eval()
     criterion = nn.MSELoss()
     content_layers_default = ['conv_4', 'conv_5', 'conv_6']
-
-    #content_img = load_img(os.path.join('./WCE/images', image_name))
+    
     content_img = load_img(os.path.join('/home/cyang53/CED/Data/UDA_Medical/Etislarib/images', image_name))
     content_img = Variable(content_img).cuda()
     wce = model(content_img)
     input_img = content_img.clone()
-    # print(ResNet)
-    # for name,parameters in ResNet.named_parameters():
-    #     print(name,':',parameters.size())
 
     loss_r_feature_layers = []
 
@@ -92,10 +85,7 @@ def main(image_name):
         if isinstance(module, nn.BatchNorm2d):
             loss_r_feature_layers.append(DeepInversionFeatureHook(module))
 
-    # inputs = torch.randn((1, 3, 256, 256), requires_grad=True, device='cuda',
-    #                      dtype=torch.float)
 
-    #optimizer = optim.Adam([inputs], lr=0.2, betas=[0.5, 0.9], eps=1e-8)
     input_param = nn.Parameter(input_img.data)
     #optimizer = optim.LBFGS([input_param])
     optimizer = optim.Adam([input_param], lr=0.01, betas=[0.5, 0.9], eps=1e-8)
@@ -104,30 +94,23 @@ def main(image_name):
         optimizer.zero_grad()
         output = model(input_param)
         loss_content = criterion(output[1], wce[1]) + criterion(output[2], wce[2]) + criterion(output[0], wce[0])
-        #print(len(loss_r_feature_layers))
         loss_r_feature = sum([mod.r_feature for (idx, mod) in
                               enumerate(loss_r_feature_layers[1:24])])
         loss = loss_r_feature + 0.5 * loss_content
         loss.backward(retain_graph=True)
         optimizer.step()
-        #print(loss_r_feature, loss_content)
+
     input_param.data.clamp_(0, 1)
-    #show_img(input_param.data.cpu())
+
     save_pic = transforms.ToPILImage()(input_param.data.cpu().squeeze(0))
 
     save_pic.save('/home/cyang53/CED/Data/UDA_Medical/Etislarib/coarse_generation/' + image_name)
-    #save_pic.save('./picture/generate.png')
 
-# ResNet = models.resnet50(pretrained=True)
-# ResNet = ResNet.cuda()
-# for module in ResNet.modules():
-#     print(module)
 if __name__ == '__main__':
     target_dir = '/home/cyang53/CED/Data/UDA_Medical/Etislarib/images'
     source_dir = '/home/cyang53/CED/Data/UDA_Medical/Etislarib/coarse_generation'
     dir_list = os.listdir(target_dir)
     for i in dir_list:
-        #if i != '83.png':
         main(i)
         im_src = Image.open(os.path.join(target_dir, i)).convert('RGB')
         im_trg = Image.open(os.path.join(source_dir, i)).convert('RGB')
@@ -145,4 +128,3 @@ if __name__ == '__main__':
 
         src_in_trg = src_in_trg.transpose((1, 2, 0))
         scipy.misc.toimage(src_in_trg, cmin=0.0, cmax=255.0).save(os.path.join('/home/cyang53/CED/Data/UDA_Medical/Etislarib/fine_generation', i))
-            #main('./picture/WCE.png')
