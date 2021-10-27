@@ -104,7 +104,10 @@ def main(image_name):
         loss_content = criterion(output[1], wce[1]) + criterion(output[2], wce[2]) + criterion(output[0], wce[0])
         loss_r_feature = sum([mod.r_feature for (idx, mod) in
                               enumerate(loss_r_feature_layers[1:24])])
+        
+        # Eq. (10): combine style loss and content loss to optimize input noise image 
         loss = loss_r_feature + 0.5 * loss_content
+        
         loss.backward(retain_graph=True)
         optimizer.step()
 
