@@ -4,7 +4,6 @@
 #FileName    :train_contrast.py
 #Version     :1.0
 
-
 import torch
 import _init_paths
 import argparse
@@ -40,7 +39,7 @@ NUM_CLASSES = 1
 NUM_STEPS = 150
 VALID_STEPS = 100
 GPU = '7'
-FOLD = 'fold1'
+FOLD = 'fold4'
 TARGET_MODE = 'gt'
 RESTORE_FROM = '/home/cyang53/CED/Ours/SFDA-TMI/checkpoint/Endo_best.pth'
 SNAPSHOT_DIR = '/home/cyang53/CED/Ours/SFDA-TMI/checkpoint/'
@@ -153,7 +152,10 @@ def main():
     optimizer = torch.optim.SGD(
         model.optim_parameters(args), lr=args.learning_rate, momentum=0.9, weight_decay=0.0005)
     source_criterion = DiceLoss()
+    
+    # Eq. (4): MSE loss to calculate feature discrepancy
     distill_criterion = nn.MSELoss()
+    
     #target_criterion = criterion.BCELoss()
     Best_dice = 0
     for epoch in range(args.num_steps):
@@ -186,13 +188,16 @@ def main():
             source_feature_rotate, source_output_rotate = model(source_image_rotate)
             target_feature, target_output = model(target_image)
             target_feature_rotate, target_output_rotate = model(target_image_rotate)
-
-            loss_pseudo = source_criterion(source_output, label, weight=None) + source_criterion(target_output, label, weight=None) + source_criterion(source_output_rotate, label_rotate, weight=None) + source_criterion(target_output_rotate, label_rotate, weight=None)
-
+            
+            # Eq. (5): domain distillation loss to learn structure-wise knowledge
             loss_distill = distill_criterion(distill_criterion(source_feature, source_feature_rotate), distill_criterion(target_feature, target_feature_rotate))
-
+               
+            # Eq. (6): domain contrastive loss to narrow down the domain gap by self-supervised paradigm
             loss_contrast = distill_criterion(source_feature, target_feature) + distill_criterion(distill_criterion(source_feature, target_feature_rotate), distill_criterion(source_feature, source_feature_rotate))
-
+            
+            # Eq. (7): compact-aware domain consistency loss to achieve output-level adaptation
+            loss_pseudo = source_criterion(source_output, label, weight=weight) + source_criterion(target_output, label, weight=weight) + source_criterion(source_output_rotate, label_rotate, weight=weight) + source_criterion(target_output_rotate, label_rotate, weight=weight)
+            
             loss_total = loss_pseudo + args.w_distill * loss_distill + args.w_contrast * loss_contrast
                 
             loss_total.backward()
@@ -210,13 +215,8 @@ def main():
                   epoch, args.num_steps, batch_time, lr, seg_loss, dis_loss, con_loss))
         # begin test on target domain
         dice = test(model, test_loader_target, args)
-        if Best_dice <= dice:
-            Best_dice = dice
-            torch.save(model.state_dict(), '/home/cyang/SFDA/checkpoint/pseudo_best.pth')
 
-        #     if WCE_dice >= Best_dice:
-        #         torch.save(model.state_dict(), './checkpoint/fda/best_%s.pth' % args.fold)
-        #     torch.save(model.state_dict(), './checkpoint/fda/fda_%s_%s.pth' % (args.fold, i_iter))
+    torch.save(model.state_dict(), '/home/cyang/SFDA/checkpoint/FSM_last.pth')
 
 
 if __name__ == '__main__':
