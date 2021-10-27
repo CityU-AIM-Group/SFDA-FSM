@@ -19,6 +19,8 @@ from torchvision import transforms
 from utils.fda import FDA_source_to_target_np
 os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
+
+# Eq. (1): style loss between noise image and BN statistics of source model
 class DeepInversionFeatureHook():
     '''
     Implementation of the forward hook to track feature statistics and compute a loss on them.
@@ -44,6 +46,7 @@ class DeepInversionFeatureHook():
     def close(self):
         self.hook.remove()
 
+# Eq. (2): Content loss between noise image and target image
 class Content_Loss(nn.Module):
     def __init__(self, target, weight):
         super(Content_Loss, self).__init__()
@@ -67,6 +70,8 @@ def fix_bn(m):
 
 def main(image_name):
     model = Deeplab(num_classes=1, pretrained=False, inversion=True).cuda()
+    
+    # load well trained source model
     model.load_state_dict(torch.load('/home/cyang53/CED/Ours/SFDA-FSM/checkpoint/Endo_best.pth'))
     model.apply(fix_bn)
     model.cuda()
@@ -77,7 +82,10 @@ def main(image_name):
     content_img = load_img(os.path.join('/home/cyang53/CED/Data/UDA_Medical/Etislarib/images', image_name))
     content_img = Variable(content_img).cuda()
     wce = model(content_img)
-    input_img = content_img.clone()
+    
+    # initialize noise image with Gaussian distribution or content image
+    input_img = Variable(torch.randn(content_img.size()), requires_grad=True).cuda()
+    # input_img = content_img.clone()
 
     loss_r_feature_layers = []
 
@@ -123,7 +131,8 @@ if __name__ == '__main__':
 
         im_src = im_src.transpose((2, 0, 1))
         im_trg = im_trg.transpose((2, 0, 1))
-
+        
+        # Eq. (3): mutual fourier transform between coarse generation and target image
         src_in_trg = FDA_source_to_target_np(im_src, im_trg, L=0.05)
 
         src_in_trg = src_in_trg.transpose((1, 2, 0))
