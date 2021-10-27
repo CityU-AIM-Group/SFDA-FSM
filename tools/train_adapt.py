@@ -195,9 +195,10 @@ def main():
             # Eq. (6): domain contrastive loss to narrow down the domain gap by self-supervised paradigm
             loss_contrast = distill_criterion(source_feature, target_feature) + distill_criterion(distill_criterion(source_feature, target_feature_rotate), distill_criterion(source_feature, source_feature_rotate))
             
-            # Eq. (7): compact-aware domain consistency loss to achieve output-level adaptation
+            # Eq. (7) and Eq. (9): compact-aware domain consistency loss to achieve output-level adaptation
             loss_pseudo = source_criterion(source_output, label, weight=weight) + source_criterion(target_output, label, weight=weight) + source_criterion(source_output_rotate, label_rotate, weight=weight) + source_criterion(target_output_rotate, label_rotate, weight=weight)
             
+            # Eq. (11): Combine domain distillation loss, domain contrastive loss and compact-aware domain consistency loss to optimize target model
             loss_total = loss_pseudo + args.w_distill * loss_distill + args.w_contrast * loss_contrast
                 
             loss_total.backward()
