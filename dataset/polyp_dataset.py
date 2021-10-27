@@ -14,6 +14,7 @@ from torchvision import transforms
 from .transform import *
 from PIL import Image, ImageEnhance, ImageOps, ImageFile, ImageFilter
 
+# Eq. (8): define compactness metric by quotient between area and perimeter of pseudo labels
 def calculateCompact(image):
     #image = Image.open(image).convert('L')
     edge = image.filter(ImageFilter.FIND_EDGES)
