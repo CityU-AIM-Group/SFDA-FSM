@@ -31,7 +31,7 @@ pip install -r requirements.txt
 ## Datasets Preparation
 
 ### EndoScene and ETIS-Larib
-(1) Download the [EndoScene and ETIS-Larib](http://www.scan-net.org/) dataset.
+(1) Download the [EndoScene and ETIS-Larib](https://drive.google.com/drive/folders/1HqlgeYwqeh538lSmrAapCL2GP0zvUUH_?usp=sharing) dataset.
 
 (2) Put the data in the corresponding folders.
 The dataset files are organized as follows.
@@ -67,10 +67,14 @@ python tools/domain_inversion.py
 (2) Visualization of source-like images.
 
 ### Adaptation Stage
-
+```
+python tools/train_adapt.py 
+```
 
 ## Testing
-
+```
+python tools/test.py 
+```
 
 # Citation
 If you find this project useful, please consider citing:
