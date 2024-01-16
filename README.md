@@ -8,3 +8,5 @@ Unsupervised domain adaptation (UDA) aims to exploit the knowledge learned from 
 # Getting Started -->
 
 # Source Free Domain Adaptation for Medical Image Segmentation with Fourier Style Mining (MIA 2022)
+
+This is the official PyTorch implementation of **FSM** (Fourier Style Mining) (MIA 2022).
