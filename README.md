@@ -10,3 +10,40 @@ Unsupervised domain adaptation (UDA) aims to exploit the knowledge learned from 
 # Source Free Domain Adaptation for Medical Image Segmentation with Fourier Style Mining (MIA 2022)
 
 This is the official PyTorch implementation of **FSM** (Fourier Style Mining) (MIA 2022).
+
+**Source Free Domain Adaptation for Medical Image Segmentation with Fourier Style Mining**[\[Paper\]](https://www.sciencedirect.com/science/article/pii/S1361841522001049)
+
+Chen Yang, Xiaoqing Guo, Zhen Chen, Yixuan Yuan
+
+<div align="center">
+  <img src="figs/framework.png"/>
+</div>
+
+# Get Started
+
+## Environment
+
+Install dependencies
+```
+pip install -r requirements.txt
+```
+
+## Datasets Preparation
+
+### EndoScene and ETIS-Larib
+(1) Download the [EndoScene and ETIS-Larib](http://www.scan-net.org/) dataset.
+
+(2) Put the data in the corresponding folders.
+The dataset files are organized as follows.
+```
+PointGroup
+├── dataset
+│   ├── scannetv2
+│   │   ├── train
+│   │   │   ├── [scene_id]_vh_clean_2.ply & [scene_id]_vh_clean_2.labels.ply & [scene_id]_vh_clean_2.0.010000.segs.json & [scene_id].aggregation.json
+│   │   ├── val
+│   │   │   ├── [scene_id]_vh_clean_2.ply & [scene_id]_vh_clean_2.labels.ply & [scene_id]_vh_clean_2.0.010000.segs.json & [scene_id].aggregation.json
+│   │   ├── test
+│   │   │   ├── [scene_id]_vh_clean_2.ply 
+│   │   ├── scannetv2-labels.combined.tsv
+```
