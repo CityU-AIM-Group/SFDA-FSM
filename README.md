@@ -42,7 +42,7 @@ SFDA-FSM
 │   │   ├── images
 │   │   │   ├── [case_id].png
 │   │   ├── labels
-│   │   │   ├── [case_id].
+│   │   │   ├── [case_id].png
 │   ├── ETIS-Larib
 │   │   ├── images
 │   │   │   ├── [case_id].png
@@ -59,7 +59,18 @@ python preprocess.py
 ## Training
 
 ### Generation Stage
-(1) Coarse generation by BN constrains.
+(1) Generate source-like images as follows.
+
+```
+python tools/domain_inversion.py 
+```
+(2) Visualization of source-like images.
+
+### Adaptation Stage
+
+
+## Testing
+
 
 # Citation
 If you find this project useful, please consider citing:
