@@ -36,14 +36,43 @@ pip install -r requirements.txt
 (2) Put the data in the corresponding folders.
 The dataset files are organized as follows.
 ```
-PointGroup
-├── dataset
-│   ├── scannetv2
-│   │   ├── train
-│   │   │   ├── [scene_id]_vh_clean_2.ply & [scene_id]_vh_clean_2.labels.ply & [scene_id]_vh_clean_2.0.010000.segs.json & [scene_id].aggregation.json
-│   │   ├── val
-│   │   │   ├── [scene_id]_vh_clean_2.ply & [scene_id]_vh_clean_2.labels.ply & [scene_id]_vh_clean_2.0.010000.segs.json & [scene_id].aggregation.json
-│   │   ├── test
-│   │   │   ├── [scene_id]_vh_clean_2.ply 
-│   │   ├── scannetv2-labels.combined.tsv
+SFDA-FSM
+├── data
+│   ├── EndoScene
+│   │   ├── images
+│   │   │   ├── [case_id].png
+│   │   ├── labels
+│   │   │   ├── [case_id].
+│   ├── ETIS-Larib
+│   │   ├── images
+│   │   │   ├── [case_id].png
+│   │   ├── labels
+│   │   │   ├── [case_id].png
+
 ```
+
+(3) Split dataset into training set and test set as follows.
+
+```
+python preprocess.py
+```
+## Training
+
+### Generation Stage
+(1) Coarse generation by BN constrains.
+
+# Citation
+If you find this project useful, please consider citing:
+
+```
+@article{yang2022source,
+  title={Source free domain adaptation for medical image segmentation with fourier style mining},
+  author={Yang, Chen and Guo, Xiaoqing and Chen, Zhen and Yuan, Yixuan},
+  journal={Medical Image Analysis},
+  volume={79},
+  pages={102457},
+  year={2022},
+  publisher={Elsevier}
+}
+```
+
