@@ -68,6 +68,7 @@ python tools/domain_inversion.py
 <div align="center">
   <img src="figs/generation.jpg"/>
 </div>
+
 ### Adaptation Stage
 ```
 python tools/train_adapt.py 
