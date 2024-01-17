@@ -65,7 +65,9 @@ python preprocess.py
 python tools/domain_inversion.py 
 ```
 (2) Visualization of source-like images.
-
+<div align="center">
+  <img src="figs/generation.jpg"/>
+</div>
 ### Adaptation Stage
 ```
 python tools/train_adapt.py 
