@@ -59,7 +59,7 @@ python preprocess.py
 ## Training
 
 ### Generation Stage
-(1) Generate source-like images as follows.
+(1) Generate source-like images with [pretrained source model](https://drive.google.com/file/d/1-0WkqSjzClCiusg_5xbqq7NayAdflLuV/view?usp=sharing) as follows.
 
 ```
 python tools/domain_inversion.py 
